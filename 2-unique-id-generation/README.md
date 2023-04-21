@@ -7,7 +7,7 @@
 go install .
 
 # Run tester.
-./maelstrom test -w unique-ids \
+maelstrom test -w unique-ids \
   --bin bin/maelstrom-uidgen \
   --time-limit 30 \
   --rate 1000 \

@@ -7,7 +7,7 @@
 go install .
 
 # Run tester.
-./maelstrom test -w echo \
+maelstrom test -w echo \
   --bin bin/maelstrom-echo \
   --node-count 1 \
   --time-limit 10
