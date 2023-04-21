@@ -29,6 +29,8 @@ func (t *Topology) SetNetwork(net map[string][]string) {
 	t.m.Lock()
 	defer t.m.Unlock()
 
+	// TODO: rearrange the topology to something more easy to use
+
 	t.network = net
 }
 
@@ -42,11 +44,12 @@ func (t *Topology) Broadcast(requester string, msg any) {
 		body := map[string]any{
 			"type":    "broadcast",
 			"message": msg,
-			"_test":   1,
 		}
 
 		t.m.Lock()
 		defer t.m.Unlock()
+
+		// TODO: improve this with an algorithm for grown up people
 
 		// Spreads a broadcast message over
 		// all nodes connected to sender
@@ -60,15 +63,13 @@ func (t *Topology) Broadcast(requester string, msg any) {
 			sendDest := dest
 			go func() {
 				for {
-					ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+					ctx, cancel := context.WithTimeout(context.Background(), 500*time.Millisecond)
 					// Message is ignored for now
 					_, err := t.node.SyncRPC(ctx, sendDest, body)
 					cancel() // Good practice...
 					if _, ok := err.(*maelstrom.RPCError); ok {
 						log.Printf("error while broadcasting to %v: %v", sendDest, err)
 					} else if err == context.DeadlineExceeded {
-						time.Sleep(1 * time.Second)
-
 						continue // Keep trying
 					}
 
