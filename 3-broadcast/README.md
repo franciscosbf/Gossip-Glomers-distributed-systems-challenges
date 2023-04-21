@@ -20,5 +20,13 @@ maelstrom test -w broadcast \
   --time-limit 20 \
   --rate 10
 
+# Start tester 3c.
+maelstrom test -w broadcast \
+  --bin bin/maelstrom-broadcast \
+  --node-count 5 \
+  --time-limit 20 \
+  --rate 10 \
+  --nemesis partition
+
 # TODO: remaining tests
 ```

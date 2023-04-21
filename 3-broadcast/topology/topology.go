@@ -1,7 +1,10 @@
 package topology
 
 import (
+	"context"
 	maelstrom "github.com/jepsen-io/maelstrom/demo/go"
+	"log"
+	"time"
 )
 
 // Topology represents the graph
@@ -47,9 +50,21 @@ func (t *Topology) Broadcast(requester string, msg any) {
 
 			sendDest := dest
 			go func() {
-				// This "send" message doesn't give a s***
-				// about response from the destination node
-				_ = t.node.Send(sendDest, body)
+				for {
+					ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+					// Message is ignored for now
+					_, err := t.node.SyncRPC(ctx, sendDest, body)
+					cancel() // Good practice...
+					if _, ok := err.(*maelstrom.RPCError); ok {
+						log.Printf("error while broadcasting to %v: %v", sendDest, err)
+					} else if err == context.DeadlineExceeded {
+						time.Sleep(1 * time.Second)
+
+						continue // Keep trying
+					}
+
+					return
+				}
 			}()
 		}
 	}()
