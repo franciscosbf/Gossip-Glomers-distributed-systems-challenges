@@ -4,12 +4,14 @@ import (
 	"context"
 	maelstrom "github.com/jepsen-io/maelstrom/demo/go"
 	"log"
+	"sync"
 	"time"
 )
 
 // Topology represents the graph
 // of all nodes in the network
 type Topology struct {
+	m       sync.Mutex
 	node    *maelstrom.Node
 	network map[string][]string
 }
@@ -24,6 +26,9 @@ func New(node *maelstrom.Node) *Topology {
 
 // SetNetwork updates the network topology
 func (t *Topology) SetNetwork(net map[string][]string) {
+	t.m.Lock()
+	defer t.m.Unlock()
+
 	t.network = net
 }
 
@@ -37,7 +42,11 @@ func (t *Topology) Broadcast(requester string, msg any) {
 		body := map[string]any{
 			"type":    "broadcast",
 			"message": msg,
+			"_test":   1,
 		}
+
+		t.m.Lock()
+		defer t.m.Unlock()
 
 		// Spreads a broadcast message over
 		// all nodes connected to sender
