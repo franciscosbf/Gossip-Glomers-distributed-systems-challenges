@@ -27,8 +27,7 @@ func main() {
 		msgBucket.Insert(content)
 
 		// Broadcasts this msg to all connected nodes
-		msgId := body["msg_id"] // TODO: see if this doesn't bring any problems
-		network.Broadcast(msg.Src, msgId, content)
+		network.Broadcast(msg.Src, content)
 
 		// Removes message entry from reply body
 		delete(body, "message")

@@ -26,14 +26,13 @@ func (t *Topology) SetNetwork(net map[string][]string) {
 
 // Broadcast sends a given message to all neighbors.
 // The requester node won't receive this message
-func (t *Topology) Broadcast(requester string, msgId any, msg any) {
+func (t *Topology) Broadcast(requester string, msg any) {
 	// Broadcasting is done by a background task since
 	// we don't need to ensure this with the requester
 	go func() {
 		nodeId := t.node.ID()
 		body := map[string]any{
 			"type":    "broadcast",
-			"msg_id":  msgId,
 			"message": msg,
 		}
 
