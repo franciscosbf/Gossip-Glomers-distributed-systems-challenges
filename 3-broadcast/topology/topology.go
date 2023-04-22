@@ -29,7 +29,7 @@ func (t *Topology) SetNetwork(net map[string][]string) {
 	t.m.Lock()
 	defer t.m.Unlock()
 
-	// TODO: rearrange the topology to something more easy to use
+	// TODO: rearrange the topology to something easier to use
 
 	t.network = net
 }
