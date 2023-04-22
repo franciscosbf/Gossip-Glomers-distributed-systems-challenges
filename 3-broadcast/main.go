@@ -22,12 +22,21 @@ func main() {
 			return err
 		}
 
-		// Extracts the message and stores it
-		content := body["message"].(float64)
-		msgBucket.Insert(content)
-
-		// Broadcasts this msg to all connected nodes
-		network.Broadcast(msg.Src, content)
+		// Extracts the message(s) and stores it(them)
+		if content, ok := body["message"]; ok {
+			value := content.(float64)
+			msgBucket.Insert(value)
+			network.Broadcast(value)
+		} else { // We assume that batch_messages exists
+			content = body["batch_messages"]
+			rawValues := content.([]any)
+			values := make([]float64, len(rawValues))
+			for i := 0; i < len(rawValues); i++ {
+				values[i] = rawValues[i].(float64)
+			}
+			msgBucket.InsertMany(values)
+			// Those aren't forwarded
+		}
 
 		// Removes message entry from reply body
 		delete(body, "message")
@@ -59,18 +68,7 @@ func main() {
 			return err
 		}
 
-		// Extracts the topology and sets it to the network
-		rawNet := body["topology"].(map[string]any)
-		newNet := make(map[string][]string)
-		for k, v := range rawNet {
-			rawNeighbors := v.([]any)
-			neighbors := make([]string, len(rawNeighbors))
-			for i := 0; i < len(rawNeighbors); i++ {
-				neighbors[i] = rawNeighbors[i].(string)
-			}
-			newNet[k] = neighbors
-		}
-		network.SetNetwork(newNet)
+		network.SetNetwork()
 
 		// Removes topology entry from reply body
 		delete(body, "topology")

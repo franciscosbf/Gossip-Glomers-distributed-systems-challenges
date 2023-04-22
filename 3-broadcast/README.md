@@ -28,5 +28,11 @@ maelstrom test -w broadcast \
   --rate 10 \
   --nemesis partition
 
-# TODO: remaining tests
+# Start tester 3d Part I and II.
+maelstrom test -w broadcast \
+  --bin bin/maelstrom-broadcast \
+  --node-count 25 \
+  --time-limit 20 \
+  --rate 100 \
+  --latency 100
 ```
